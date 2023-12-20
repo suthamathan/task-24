@@ -1,0 +1,86 @@
+
+SQL Queries:
+A. Display EName and Sal of employees whose salary is greater than or equal to 2200:
+
+
+SELECT EName, Sal
+FROM Empl
+WHERE Sal >= 2200;
+B. Display details of employees who are not getting commission:
+
+
+SELECT *
+FROM Empl
+WHERE Comm IS NULL;
+C. Display employee name and salary of those employees who don't have their salary in the range of 2500 to 4000:
+
+
+SELECT EName, Sal
+FROM Empl
+WHERE Sal < 2500 OR Sal > 4000;
+D. Display the name, job title, and salary of employees who don't have a manager:
+
+
+SELECT EName, Job, Sal
+FROM Empl
+WHERE Mgr IS NULL;
+E. Display the name of an employee whose name contains "A" as the third alphabet:
+
+
+SELECT EName
+FROM Empl
+WHERE SUBSTRING(EName, 3, 1) = 'A';
+F. Display the name of an employee whose name contains "T" as the last alphabet:
+
+
+SELECT EName
+FROM Empl
+WHERE RIGHT(EName, 1) = 'T';
+JDBC Program:
+Here's a simple Java program using JDBC to insert data into the Empl table:
+
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class InsertDataJDBC {
+
+    public static void main(String[] args) {
+        String url = "jdbc:mysql://your_database_url";
+        String username = "your_username";
+        String password = "your_password";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+            String insertQuery = "INSERT INTO Empl (empno, ename, job, mgr, hiredate, sal, comm, deptno) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            
+            try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+                // Insert data
+                insertData(preparedStatement, 101, "Jenny", "Clerk", 8902, "1990-12-18", 10000.00, null, 20);
+                insertData(preparedStatement, 102, "Jacky", "Manager", 8839, "1991-05-01", 20000.00, null, 30);
+                insertData(preparedStatement, 103, "Joe", "Salesman", 8698, "1991-02-20", 40000.00, 300.00, 30);
+                insertData(preparedStatement, 104, "John", "Manager", 8839, "1991-06-09", 80000.00, null, 10);
+                insertData(preparedStatement, 105, "Shameer", "Analyst", 8566, "1992-12-09", 90000.00, null, 20);
+
+                System.out.println("Data inserted successfully.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void insertData(PreparedStatement preparedStatement, int empno, String ename, String job, int mgr,
+                                   String hiredate, double sal, Double comm, int deptno) throws SQLException {
+        preparedStatement.setInt(1, empno);
+        preparedStatement.setString(2, ename);
+        preparedStatement.setString(3, job);
+        preparedStatement.setInt(4, mgr);
+        preparedStatement.setString(5, hiredate);
+        preparedStatement.setDouble(6, sal);
+        preparedStatement.setObject(7, comm);
+        preparedStatement.setInt(8, deptno);
+
+        preparedStatement.executeUpdate();
+    }
+}
